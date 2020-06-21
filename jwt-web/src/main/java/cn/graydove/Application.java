@@ -1,5 +1,7 @@
 package cn.graydove;
 
+import cn.graydove.security.annotation.CurrentUser;
+import cn.graydove.security.userdetails.support.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +16,13 @@ public class Application {
     }
 
     @PostMapping("/register")
-    public String register(){
+    public String register(@CurrentUser User user){
         return "success";
     }
+
+    @PostMapping("/info")
+    public User getInfo(@CurrentUser User user){
+        return user;
+    }
+
 }
