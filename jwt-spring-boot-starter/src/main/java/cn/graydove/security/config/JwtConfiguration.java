@@ -28,7 +28,7 @@ public class JwtConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TokenManager.class)
-    public TokenManager jwtManager(){
+    public TokenManager tokenManager(){
         return new TokenManager(jwtProperties.getToken());
     }
 

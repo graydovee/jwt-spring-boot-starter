@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 登录成功
+ */
 public class DefaultAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
 

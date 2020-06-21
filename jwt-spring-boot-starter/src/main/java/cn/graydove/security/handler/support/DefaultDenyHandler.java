@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 无权限访问
+ */
 public class DefaultDenyHandler extends DenyHandler {
     @Override
     public void doHandle(HttpServletRequest request, HttpServletResponse response, FailException e) throws IOException, ServletException {

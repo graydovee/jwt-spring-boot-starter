@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 未登录
+ */
 public class DefaultUnauthorizedHandler extends UnauthorizedHandler {
 
 

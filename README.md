@@ -24,3 +24,8 @@ public class MyAuthorityConfiguration implements AuthorityConfigure {
 }
 ```
 
+6. 若要修改认证返回结果，可重写并注册以下接口：
+   1. 登陆成功：实现`AuthenticationSuccessHandler`接口
+   2. 登陆失败：继承并重写`AuthenticationDenyHandler`抽象类
+   3. 访问拒绝，因未登录：继承并重写`AuthenticationDenyHandler`抽象类
+   4. 访问拒绝，因未无权限：继承并重写`AuthenticationDenyHandler`抽象类
