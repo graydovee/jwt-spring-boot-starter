@@ -6,12 +6,12 @@
 
 # 快速上手：
 
-1. 实现`UserDetails`接口
+1. 导入maven
+2. 实现`UserDetails`接口
 
-2. 实现`GrantedAuthority`接口
-
-3. 实现`UserDetailService<T extends UserDetails>`接口
-4. 配置权限
+3. 实现`GrantedAuthority`接口
+4. 实现`UserDetailService<T extends UserDetails>`接口，并使用`@Service`注解
+5. 配置权限，如下
 
 ```java
 @Configuration
