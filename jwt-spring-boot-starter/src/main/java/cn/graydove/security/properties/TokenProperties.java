@@ -10,15 +10,19 @@ import java.util.Map;
 @Data
 public class TokenProperties {
 
+    public final static String TYPE_BEARER = "Bearer";
+
+    private boolean useCookie = true;
+
     private String secret = "gray_dove";
 
     private Map<String, Object> claims = Collections.emptyMap();
 
     private String issuer = "http://";
 
-    private String prefix = "Bearer";
+    private String type = TYPE_BEARER;
 
-    private String header = "Authorization";
+    private String tokenKey = "Authorization";
 
-    private int ttl = 60 * 60 * 1000;
+    private long ttl = 60 * 60 * 1000;
 }

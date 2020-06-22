@@ -1,7 +1,6 @@
-package cn.graydove.security.token.authority.impl;
+package cn.graydove.security.token.manager.impl;
 
-import cn.graydove.security.token.authority.AuthorityManager;
-import cn.graydove.security.token.authority.AuthorityMatcher;
+import cn.graydove.security.token.manager.AuthorityAdapter;
 import cn.graydove.security.token.authority.AuthorizeRequest;
 import cn.graydove.security.token.authority.AuthorizeRequestBuilder;
 import org.springframework.util.AntPathMatcher;
@@ -9,7 +8,7 @@ import org.springframework.util.AntPathMatcher;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthorityManagerImpl implements AuthorityManager, AuthorityMatcher {
+public class AuthorityAdapterImpl implements AuthorityAdapter {
 
     private List<AuthorizeRequest> authorizeRequests = new ArrayList<>();
 

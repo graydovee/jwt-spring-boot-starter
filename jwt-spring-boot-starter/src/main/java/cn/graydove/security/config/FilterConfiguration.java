@@ -9,10 +9,13 @@ import cn.graydove.security.handler.DenyHandler;
 import cn.graydove.security.handler.UnauthorizedHandler;
 import cn.graydove.security.token.TokenManager;
 import cn.graydove.security.properties.JwtProperties;
-import cn.graydove.security.token.authority.AuthorityMatcher;
+import cn.graydove.security.token.getter.TokenGetter;
+import cn.graydove.security.token.getter.support.HeaderBearerTokenGetter;
+import cn.graydove.security.token.manager.AuthorityMatcher;
 import cn.graydove.security.userdetails.UserDetailService;
 import cn.graydove.security.userdetails.UserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -43,10 +46,16 @@ public class FilterConfiguration {
         this.userDetailService = userDetailService;
     }
 
+    @Bean
+    @ConditionalOnMissingBean(TokenGetter.class)
+    public TokenGetter tokenGetter() {
+        return new HeaderBearerTokenGetter();
+    }
+
     @SuppressWarnings("unchecked")
     @Bean
     @ConditionalOnMissingFilterBean(TokenFilter.class)
-    public FilterRegistrationBean<TokenFilter> tokenFilter(DenyHandler denyHandler, UnauthorizedHandler unauthorizedHandler, AuthorityMatcher authorityMatcher) {
+    public FilterRegistrationBean<TokenFilter> tokenFilter(DenyHandler denyHandler, UnauthorizedHandler unauthorizedHandler, AuthorityMatcher authorityMatcher, TokenGetter tokenGetter) {
         Class<? extends UserDetailService> userDetailServiceClass = userDetailService.getClass();
         Class<? extends UserDetails> userClass;
         try {
@@ -56,7 +65,7 @@ public class FilterConfiguration {
             throw new RuntimeException("无法找到UserDetails的实现类");
         }
         FilterRegistrationBean<TokenFilter> bean = new FilterRegistrationBean<>();
-        TokenFilter filter = new TokenFilter(objectMapper, jwtProperties, tokenManager, authorityMatcher, denyHandler, unauthorizedHandler, userClass);
+        TokenFilter filter = new TokenFilter(objectMapper, jwtProperties, tokenManager, authorityMatcher, denyHandler, unauthorizedHandler, tokenGetter, userClass);
         bean.setFilter(filter);
         bean.setName(filter.getName());
         bean.setOrder(2);

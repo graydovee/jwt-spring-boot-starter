@@ -1,4 +1,4 @@
-package cn.graydove.security.token.authority;
+package cn.graydove.security.token.manager;
 
 
 public interface AuthorityConfigure {

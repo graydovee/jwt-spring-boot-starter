@@ -28,7 +28,7 @@ public class MyAuthorityConfiguration implements AuthorityConfigure {
    
 ```java
 @RestController
-public class Mycontroller {
+public class MyController {
     @GetMapping("/info")
     public User getInfo(@CurrentUser User user){
         return user;
@@ -42,3 +42,14 @@ public class Mycontroller {
    2. 登陆失败：继承并重写`AuthenticationDenyHandler`抽象类
    3. 访问拒绝，因未登录：继承并重写`AuthenticationDenyHandler`抽象类
    4. 访问拒绝，因未无权限：继承并重写`AuthenticationDenyHandler`抽象类
+
+8. 可配置TokenGetter，修改Token获取方式，已有`CookieBearerTokenGetter`和`HeaderBearerTokenGetter`两个实现，默认使用`CookieBearerTokenGetter`配置示例如下
+```java
+@Configuration
+public class MyConfig {
+    @Bean
+    public TokenGetter tokenGetter() {
+        return new CookieBearerTokenGetter();
+    }
+}
+```

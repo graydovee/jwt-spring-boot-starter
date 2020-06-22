@@ -3,6 +3,5 @@ cn.graydove.security.config.JwtConfiguration,\
 cn.graydove.security.config.FilterConfiguration,\
 cn.graydove.security.config.WebMvcConfiguration,\
 cn.graydove.security.config.AuthorityConfiguration,\
-cn.graydove.security.config.BeanConfiguration,\
 cn.graydove.security.config.SecurityCorsConfiguration,\
 cn.graydove.security.config.HandlerConfiguration

@@ -1,7 +1,9 @@
 package cn.graydove.security.handler.support;
 
 import cn.graydove.security.handler.AuthenticationSuccessHandler;
+import cn.graydove.security.properties.TokenProperties;
 import cn.graydove.security.token.Token;
+import cn.graydove.security.utils.TokenUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

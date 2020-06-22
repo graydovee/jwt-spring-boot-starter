@@ -8,7 +8,8 @@ import cn.graydove.security.handler.DenyHandler;
 import cn.graydove.security.handler.UnauthorizedHandler;
 import cn.graydove.security.properties.JwtProperties;
 import cn.graydove.security.token.TokenManager;
-import cn.graydove.security.token.authority.AuthorityMatcher;
+import cn.graydove.security.token.getter.TokenGetter;
+import cn.graydove.security.token.manager.AuthorityMatcher;
 import cn.graydove.security.userdetails.UserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -34,26 +35,28 @@ public class TokenFilter extends BaseFilter {
 
     private UnauthorizedHandler unauthorizedHandler;
 
+    private TokenGetter tokenGetter;
+
     private Class<? extends UserDetails> userClass;
 
-    public TokenFilter(ObjectMapper objectMapper, JwtProperties jwtProperties, TokenManager tokenManager, AuthorityMatcher authorityMatcher, DenyHandler denyHandler, UnauthorizedHandler unauthorizedHandler, Class<? extends UserDetails> userClass) {
+    public TokenFilter(ObjectMapper objectMapper, JwtProperties jwtProperties, TokenManager tokenManager, AuthorityMatcher authorityMatcher, DenyHandler denyHandler, UnauthorizedHandler unauthorizedHandler, TokenGetter tokenGetter, Class<? extends UserDetails> userClass) {
         this.objectMapper = objectMapper;
         this.jwtProperties = jwtProperties;
         this.tokenManager = tokenManager;
         this.authorityMatcher = authorityMatcher;
         this.denyHandler = denyHandler;
         this.unauthorizedHandler = unauthorizedHandler;
+        this.tokenGetter = tokenGetter;
         this.userClass = userClass;
     }
 
     @Override
     public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String requestURI = request.getRequestURI();
-
-        String header = request.getHeader(jwtProperties.getToken().getHeader());
         UserDetails user;
         try {
-            user = check(header);
+            String token = tokenGetter.getToken(request, jwtProperties.getToken());
+            user = check(token);
             request.setAttribute(UserDetails.USER_PARAM_NAME, user);
 
             if (!authorityMatcher.match(requestURI).asserts(user)) {
@@ -72,18 +75,13 @@ public class TokenFilter extends BaseFilter {
         filterChain.doFilter(request, response);
     }
 
-    private UserDetails check(String header) throws InvalidTokenException, UnauthorizedException {
-        if (header == null) {
+    private UserDetails check(String token) throws InvalidTokenException, UnauthorizedException {
+        if (token == null) {
             throw new UnauthorizedException();
         }
-        String prefix = jwtProperties.getToken().getPrefix();
-        if (!header.startsWith(prefix)) {
-            throw new InvalidTokenException();
-        }
-        String jwt = header.substring(prefix.length() + 1);
         Claims claims;
         try {
-            claims = tokenManager.parseJWT(jwt);
+            claims = tokenManager.parseJWT(token);
         } catch (Exception e) {
             throw new InvalidTokenException();
         }

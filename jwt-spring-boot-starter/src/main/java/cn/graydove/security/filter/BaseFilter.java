@@ -11,7 +11,7 @@ public abstract class BaseFilter implements Filter {
     public abstract String getName();
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public final void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         doFilter((HttpServletRequest)servletRequest, (HttpServletResponse)servletResponse, filterChain);
     }
 

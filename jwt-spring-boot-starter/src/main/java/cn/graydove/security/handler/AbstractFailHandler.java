@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public abstract class AbstractFailHandler implements FailHandler {
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, FailException e) throws IOException, ServletException {
+    public final void handle(HttpServletRequest request, HttpServletResponse response, FailException e) throws IOException, ServletException {
         response.setStatus(getCode());
         doHandle(request, response, e);
     }

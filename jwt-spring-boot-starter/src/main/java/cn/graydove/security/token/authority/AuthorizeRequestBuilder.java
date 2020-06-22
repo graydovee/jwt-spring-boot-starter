@@ -1,7 +1,7 @@
 package cn.graydove.security.token.authority;
 
 import cn.graydove.security.token.authority.impl.Authenticated;
-import cn.graydove.security.token.authority.impl.AuthorityManagerImpl;
+import cn.graydove.security.token.manager.impl.AuthorityAdapterImpl;
 import cn.graydove.security.token.authority.impl.HasAnyAuthority;
 import cn.graydove.security.token.authority.impl.PermitAll;
 
@@ -9,37 +9,37 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class AuthorizeRequestBuilder {
-    private AuthorityManagerImpl authorityManager;
+    private AuthorityAdapterImpl authorityManager;
     private AuthorizeRequest authorizeRequest;
 
-    public AuthorizeRequestBuilder(AuthorizeRequest authorizeRequest, AuthorityManagerImpl authorityManager) {
+    public AuthorizeRequestBuilder(AuthorizeRequest authorizeRequest, AuthorityAdapterImpl authorityManager) {
         this.authorityManager = authorityManager;
         this.authorizeRequest = authorizeRequest;
     }
 
-    private AuthorityManagerImpl build() {
+    private AuthorityAdapterImpl build() {
         authorityManager.addAuthorizeRequest(authorizeRequest);
         return authorityManager;
     }
 
-    public AuthorityManagerImpl permitAll() {
+    public AuthorityAdapterImpl permitAll() {
         authorizeRequest.setAuthorityAssert(new PermitAll());
         return build();
     }
 
-    public AuthorityManagerImpl hasAnyAuthority(String ... authority) {
+    public AuthorityAdapterImpl hasAnyAuthority(String ... authority) {
         authorizeRequest.setAuthorities(Arrays.asList(authority));
         authorizeRequest.setAuthorityAssert(new HasAnyAuthority());
         return build();
     }
 
-    public AuthorityManagerImpl hasAuthority(String authority) {
+    public AuthorityAdapterImpl hasAuthority(String authority) {
         authorizeRequest.setAuthorities(Collections.singletonList(authority));
         authorizeRequest.setAuthorityAssert(new HasAnyAuthority());
         return build();
     }
 
-    public AuthorityManagerImpl authenticated() {
+    public AuthorityAdapterImpl authenticated() {
         authorizeRequest.setAuthorityAssert(new Authenticated());
         return build();
     }

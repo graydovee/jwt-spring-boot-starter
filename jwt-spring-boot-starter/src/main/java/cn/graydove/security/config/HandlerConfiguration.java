@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(prefix = "jwt", name = "enable", havingValue = "true", matchIfMissing = true)
 public class HandlerConfiguration {
 
+
     @Bean
     @ConditionalOnMissingBean(AuthenticationSuccessHandler.class)
     public AuthenticationSuccessHandler authenticationSuccessHandler() {

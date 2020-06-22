@@ -18,8 +18,8 @@ public class SecurityCorsConfiguration {
 
     private CorsProperties properties;
 
-    public SecurityCorsConfiguration(JwtProperties properties) {
-        this.properties = properties.getCors();
+    public SecurityCorsConfiguration(CorsProperties corsProperties) {
+        this.properties = corsProperties;
     }
 
     private CorsConfiguration buildConfig() {
