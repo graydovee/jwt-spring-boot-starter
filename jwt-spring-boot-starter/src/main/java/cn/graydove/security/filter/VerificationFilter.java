@@ -79,21 +79,16 @@ public class VerificationFilter extends BaseFilter {
         if (token == null) {
             throw new UnauthorizedException();
         }
-        Claims claims;
-        try {
-            claims = tokenManager.parseJWT(token);
-        } catch (Exception e) {
+        String userJsonInfo = tokenManager.parseToken(token);
+        if (userJsonInfo == null) {
             throw new InvalidTokenException();
         }
-        if (jwtProperties.getToken().getIssuer().equals(claims.getIssuer())) {
-            try {
-                return objectMapper.readValue(claims.getSubject(), userClass);
-            } catch (Exception e) {
-                log.warn("user序列化失败：" + e.getMessage(), e);
-                throw new InvalidTokenException();
-            }
+        try {
+            return objectMapper.readValue(userJsonInfo, userClass);
+        } catch (Exception e) {
+            log.warn("user序列化失败：" + e.getMessage(), e);
+            throw new InvalidTokenException();
         }
-        throw new InvalidTokenException();
     }
 
 

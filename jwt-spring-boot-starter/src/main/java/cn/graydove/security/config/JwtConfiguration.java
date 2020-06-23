@@ -3,6 +3,7 @@ package cn.graydove.security.config;
 import cn.graydove.security.crypto.PasswordEncoder;
 import cn.graydove.security.crypto.support.BCryptPasswordEncoder;
 import cn.graydove.security.properties.DefaultProperties;
+import cn.graydove.security.token.JwtTokenManager;
 import cn.graydove.security.token.TokenManager;
 import cn.graydove.security.properties.JwtProperties;
 import cn.graydove.security.token.getter.TokenGetter;
@@ -33,7 +34,7 @@ public class JwtConfiguration {
     @Bean
     @ConditionalOnMissingBean(TokenManager.class)
     public TokenManager tokenManager(){
-        return new TokenManager(jwtProperties.getToken());
+        return new JwtTokenManager(jwtProperties.getToken());
     }
 
 

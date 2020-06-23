@@ -71,7 +71,7 @@ public class AuthorizationFilter extends BaseFilter {
         try {
             UserDetails user = check(request);
             user.setPassword(null);
-            String jwt = tokenManager.createJWT(objectMapper.writeValueAsString(user));
+            String jwt = tokenManager.createToken(objectMapper.writeValueAsString(user));
 
             TokenProperties tokenProperties = jwtProperties.getToken();
             Token token = new Token(tokenProperties.getType(), jwt);
