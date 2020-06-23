@@ -5,6 +5,10 @@ import cn.graydove.security.crypto.support.BCryptPasswordEncoder;
 import cn.graydove.security.properties.DefaultProperties;
 import cn.graydove.security.token.TokenManager;
 import cn.graydove.security.properties.JwtProperties;
+import cn.graydove.security.token.getter.TokenGetter;
+import cn.graydove.security.token.getter.support.HeaderBearerTokenGetter;
+import cn.graydove.security.token.setter.CookieTokenSetter;
+import cn.graydove.security.token.setter.support.CookieBearerTokenSetter;
 import cn.graydove.security.userdetails.UserDetailService;
 import cn.graydove.security.userdetails.support.Authority;
 import cn.graydove.security.userdetails.support.DefaultUserDetailService;
@@ -49,4 +53,18 @@ public class JwtConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
+    @Bean
+    @ConditionalOnMissingBean(TokenGetter.class)
+    public TokenGetter tokenGetter() {
+        return new HeaderBearerTokenGetter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CookieTokenSetter.class)
+    public CookieTokenSetter cookieTokenSetter() {
+        return new CookieBearerTokenSetter();
+    }
+
 }

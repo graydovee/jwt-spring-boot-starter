@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-public class TokenFilter extends BaseFilter {
+public class VerificationFilter extends BaseFilter {
 
     private ObjectMapper objectMapper;
 
@@ -39,7 +39,7 @@ public class TokenFilter extends BaseFilter {
 
     private Class<? extends UserDetails> userClass;
 
-    public TokenFilter(ObjectMapper objectMapper, JwtProperties jwtProperties, TokenManager tokenManager, AuthorityMatcher authorityMatcher, DenyHandler denyHandler, UnauthorizedHandler unauthorizedHandler, TokenGetter tokenGetter, Class<? extends UserDetails> userClass) {
+    public VerificationFilter(ObjectMapper objectMapper, JwtProperties jwtProperties, TokenManager tokenManager, AuthorityMatcher authorityMatcher, DenyHandler denyHandler, UnauthorizedHandler unauthorizedHandler, TokenGetter tokenGetter, Class<? extends UserDetails> userClass) {
         this.objectMapper = objectMapper;
         this.jwtProperties = jwtProperties;
         this.tokenManager = tokenManager;

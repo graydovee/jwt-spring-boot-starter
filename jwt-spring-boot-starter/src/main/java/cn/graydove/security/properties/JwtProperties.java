@@ -13,6 +13,12 @@ public class JwtProperties {
     private boolean enable = true;
 
     @NestedConfigurationProperty
+    private CorsProperties cors = new CorsProperties();
+
+    @NestedConfigurationProperty
+    private CookieProperties cookie = new CookieProperties();
+
+    @NestedConfigurationProperty
     private DefaultProperties defaults = new DefaultProperties();
 
     @NestedConfigurationProperty

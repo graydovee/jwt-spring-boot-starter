@@ -7,13 +7,14 @@ import cn.graydove.security.exception.PasswordNotMatchException;
 import cn.graydove.security.exception.UsernameNotFoundException;
 import cn.graydove.security.handler.AuthenticationDenyHandler;
 import cn.graydove.security.handler.AuthenticationSuccessHandler;
+import cn.graydove.security.properties.CookieProperties;
 import cn.graydove.security.properties.JwtProperties;
 import cn.graydove.security.properties.TokenProperties;
 import cn.graydove.security.token.Token;
 import cn.graydove.security.token.TokenManager;
+import cn.graydove.security.token.setter.CookieTokenSetter;
 import cn.graydove.security.userdetails.UserDetailService;
 import cn.graydove.security.userdetails.UserDetails;
-import cn.graydove.security.utils.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.StringUtils;
 
@@ -25,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 
-public class LoginFilter extends BaseFilter {
+public class AuthorizationFilter extends BaseFilter {
 
     private ObjectMapper objectMapper;
 
@@ -41,7 +42,9 @@ public class LoginFilter extends BaseFilter {
 
     private AuthenticationSuccessHandler authenticationSuccessHandler;
 
-    public LoginFilter(ObjectMapper objectMapper, JwtProperties jwtProperties, PasswordEncoder passwordEncoder, TokenManager tokenManager, UserDetailService userDetailService, AuthenticationDenyHandler authenticationDenyHandler, AuthenticationSuccessHandler authenticationSuccessHandler) {
+    private CookieTokenSetter cookieTokenSetter;
+
+    public AuthorizationFilter(ObjectMapper objectMapper, JwtProperties jwtProperties, PasswordEncoder passwordEncoder, TokenManager tokenManager, UserDetailService userDetailService, AuthenticationDenyHandler authenticationDenyHandler, AuthenticationSuccessHandler authenticationSuccessHandler) {
         this.objectMapper = objectMapper;
         this.jwtProperties = jwtProperties;
         this.passwordEncoder = passwordEncoder;
@@ -49,6 +52,10 @@ public class LoginFilter extends BaseFilter {
         this.userDetailService = userDetailService;
         this.authenticationDenyHandler = authenticationDenyHandler;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
+    }
+
+    public void setCookieTokenSetter(CookieTokenSetter cookieTokenSetter) {
+        this.cookieTokenSetter = cookieTokenSetter;
     }
 
     @Override
@@ -70,10 +77,15 @@ public class LoginFilter extends BaseFilter {
             Token token = new Token(tokenProperties.getType(), jwt);
 
             //写入Cookie
-            if (tokenProperties.isUseCookie() && TokenProperties.TYPE_BEARER.equals(token.getType())) {
-                String bearerToken = URLEncoder.encode(TokenUtils.toBearerToken(token.getToken()), "utf-8");
+            CookieProperties cookieProperties = jwtProperties.getCookie();
+            if (cookieProperties.isEnable() && TokenProperties.TYPE_BEARER.equals(token.getType())) {
+                String bearerToken = URLEncoder.encode(cookieTokenSetter.getTokenValue(token), "utf-8");
+
                 Cookie cookie = new Cookie(tokenProperties.getTokenKey(), bearerToken);
-                cookie.setMaxAge((int)(tokenProperties.getTtl() / 1000));
+                cookie.setMaxAge((int) (tokenProperties.getTtl() / 1000));
+                cookie.setSecure(cookieProperties.isSecure());
+                cookie.setHttpOnly(cookieProperties.isHttpOnly());
+
                 response.addCookie(cookie);
             }
             authenticationSuccessHandler.handle(request, response, token);

@@ -1,8 +1,8 @@
 package cn.graydove.security.config;
 
 import cn.graydove.security.crypto.PasswordEncoder;
-import cn.graydove.security.filter.LoginFilter;
-import cn.graydove.security.filter.TokenFilter;
+import cn.graydove.security.filter.AuthorizationFilter;
+import cn.graydove.security.filter.VerificationFilter;
 import cn.graydove.security.handler.AuthenticationDenyHandler;
 import cn.graydove.security.handler.AuthenticationSuccessHandler;
 import cn.graydove.security.handler.DenyHandler;
@@ -10,12 +10,11 @@ import cn.graydove.security.handler.UnauthorizedHandler;
 import cn.graydove.security.token.TokenManager;
 import cn.graydove.security.properties.JwtProperties;
 import cn.graydove.security.token.getter.TokenGetter;
-import cn.graydove.security.token.getter.support.HeaderBearerTokenGetter;
 import cn.graydove.security.token.manager.AuthorityMatcher;
+import cn.graydove.security.token.setter.CookieTokenSetter;
 import cn.graydove.security.userdetails.UserDetailService;
 import cn.graydove.security.userdetails.UserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -46,16 +45,11 @@ public class FilterConfiguration {
         this.userDetailService = userDetailService;
     }
 
-    @Bean
-    @ConditionalOnMissingBean(TokenGetter.class)
-    public TokenGetter tokenGetter() {
-        return new HeaderBearerTokenGetter();
-    }
 
     @SuppressWarnings("unchecked")
     @Bean
-    @ConditionalOnMissingFilterBean(TokenFilter.class)
-    public FilterRegistrationBean<TokenFilter> tokenFilter(DenyHandler denyHandler, UnauthorizedHandler unauthorizedHandler, AuthorityMatcher authorityMatcher, TokenGetter tokenGetter) {
+    @ConditionalOnMissingFilterBean(VerificationFilter.class)
+    public FilterRegistrationBean<VerificationFilter> tokenFilter(DenyHandler denyHandler, UnauthorizedHandler unauthorizedHandler, AuthorityMatcher authorityMatcher, TokenGetter tokenGetter) {
         Class<? extends UserDetailService> userDetailServiceClass = userDetailService.getClass();
         Class<? extends UserDetails> userClass;
         try {
@@ -64,24 +58,28 @@ public class FilterConfiguration {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("无法找到UserDetails的实现类");
         }
-        FilterRegistrationBean<TokenFilter> bean = new FilterRegistrationBean<>();
-        TokenFilter filter = new TokenFilter(objectMapper, jwtProperties, tokenManager, authorityMatcher, denyHandler, unauthorizedHandler, tokenGetter, userClass);
+        FilterRegistrationBean<VerificationFilter> bean = new FilterRegistrationBean<>();
+        VerificationFilter filter = new VerificationFilter(objectMapper, jwtProperties, tokenManager, authorityMatcher, denyHandler, unauthorizedHandler, tokenGetter, userClass);
         bean.setFilter(filter);
         bean.setName(filter.getName());
-        bean.setOrder(2);
+        bean.setOrder(101);
         bean.addUrlPatterns("/*");
         return bean;
     }
 
     @Bean
-    @ConditionalOnMissingFilterBean(LoginFilter.class)
-    public FilterRegistrationBean<LoginFilter> LoginFilter(AuthenticationDenyHandler authenticationDenyHandler,
-                                                           AuthenticationSuccessHandler authenticationSuccessHandler) {
-        FilterRegistrationBean<LoginFilter> bean = new FilterRegistrationBean<>();
-        LoginFilter filter = new LoginFilter(objectMapper, jwtProperties, passwordEncoder, tokenManager, userDetailService, authenticationDenyHandler, authenticationSuccessHandler);
+    @ConditionalOnMissingFilterBean(AuthorizationFilter.class)
+    public FilterRegistrationBean<AuthorizationFilter> LoginFilter(AuthenticationDenyHandler authenticationDenyHandler,
+                                                                   AuthenticationSuccessHandler authenticationSuccessHandler,
+                                                                   CookieTokenSetter cookieTokenSetter) {
+        FilterRegistrationBean<AuthorizationFilter> bean = new FilterRegistrationBean<>();
+        AuthorizationFilter filter = new AuthorizationFilter(objectMapper, jwtProperties, passwordEncoder, tokenManager, userDetailService, authenticationDenyHandler, authenticationSuccessHandler);
+        if (jwtProperties.getCookie().isEnable()) {
+            filter.setCookieTokenSetter(cookieTokenSetter);
+        }
         bean.setFilter(filter);
         bean.setName(filter.getName());
-        bean.setOrder(1);
+        bean.setOrder(100);
         bean.addUrlPatterns(jwtProperties.getLogin().getLoginUri());
         return bean;
     }

@@ -3,7 +3,6 @@ package cn.graydove.security.config;
 import cn.graydove.security.properties.CorsProperties;
 import cn.graydove.security.properties.JwtProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +17,8 @@ public class SecurityCorsConfiguration {
 
     private CorsProperties properties;
 
-    public SecurityCorsConfiguration(CorsProperties corsProperties) {
-        this.properties = corsProperties;
+    public SecurityCorsConfiguration(JwtProperties jwtProperties) {
+        this.properties = jwtProperties.getCors();
     }
 
     private CorsConfiguration buildConfig() {
@@ -34,7 +33,8 @@ public class SecurityCorsConfiguration {
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration(properties.getPath(), buildConfig()); // 4
+        source.registerCorsConfiguration(properties.getPath(), buildConfig());
         return new CorsFilter(source);
     }
+
 }

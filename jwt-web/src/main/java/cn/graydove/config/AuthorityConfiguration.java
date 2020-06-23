@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
 public class AuthorityConfiguration implements AuthorityConfigure {
     @Override
     public void configure(AuthorityManager authorityManager) {
-        authorityManager.antMatchers("/reg").permitAll().anyRequest().authenticated();
+        authorityManager.antMatchers("/register").permitAll().anyRequest().authenticated();
     }
 }

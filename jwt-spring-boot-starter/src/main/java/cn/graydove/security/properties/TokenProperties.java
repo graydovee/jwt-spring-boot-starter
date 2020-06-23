@@ -12,8 +12,6 @@ public class TokenProperties {
 
     public final static String TYPE_BEARER = "Bearer";
 
-    private boolean useCookie = true;
-
     private String secret = "gray_dove";
 
     private Map<String, Object> claims = Collections.emptyMap();

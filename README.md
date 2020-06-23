@@ -53,3 +53,7 @@ public class MyConfig {
     }
 }
 ```
+9 可实现并注册`CookieTokenSetter`接口，自定义写入Cookie的token内容。建议配合实现并重写`AbstractCookieTokenGetter`的`getTokenFromCookie`方法使用
+
+### 待解决问题：
+1. 暂时无法解决csrf问题

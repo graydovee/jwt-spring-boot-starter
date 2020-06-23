@@ -1,27 +1,17 @@
 package cn.graydove.security.token.getter.support;
 
-import cn.graydove.security.properties.TokenProperties;
-import cn.graydove.security.token.getter.AbstractBearerTokenGetter;
+import cn.graydove.security.token.getter.AbstractCookieTokenGetter;
+import cn.graydove.security.token.getter.BearerTokenGetter;
+import cn.graydove.security.utils.TokenUtils;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
-public class CookieBearerTokenGetter extends AbstractBearerTokenGetter {
+public class CookieBearerTokenGetter extends AbstractCookieTokenGetter implements BearerTokenGetter {
 
     @Override
-    public String getBearerToken(HttpServletRequest request, TokenProperties properties) {
-        for (Cookie cookie: request.getCookies()) {
-            if (cookie.getName().equals(properties.getTokenKey())) {
-                try {
-                    return URLDecoder.decode(cookie.getValue(), "utf-8");
-                } catch (UnsupportedEncodingException e) {
-                    return null;
-                }
-            }
-        }
-        return null;
+    public String getTokenFromCookie(Cookie cookie) {
+        String value = getValue(cookie);
+        return TokenUtils.getTokenFromBearerToken(value);
     }
 
 }
