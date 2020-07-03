@@ -7,14 +7,13 @@ import cn.graydove.security.exception.UnauthorizedException;
 import cn.graydove.security.handler.DenyHandler;
 import cn.graydove.security.handler.UnauthorizedHandler;
 import cn.graydove.security.properties.JwtProperties;
-import cn.graydove.security.token.HttpMethodType;
 import cn.graydove.security.token.TokenManager;
 import cn.graydove.security.token.getter.TokenGetter;
 import cn.graydove.security.token.manager.AuthorityMatcher;
 import cn.graydove.security.userdetails.UserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -55,22 +54,22 @@ public class VerificationFilter extends BaseFilter {
     public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String requestURI = request.getRequestURI();
         UserDetails user;
-        HttpMethodType httpMethodType;
+        RequestMethod requestMethod;
         try {
-            httpMethodType = HttpMethodType.valueOf(request.getMethod());
+            requestMethod = RequestMethod.valueOf(request.getMethod());
         } catch (Exception e) {
-            httpMethodType = null;
+            requestMethod = null;
         }
         try {
             String token = tokenGetter.getToken(request, jwtProperties.getToken());
             user = check(token);
             request.setAttribute(UserDetails.USER_PARAM_NAME, user);
 
-            if (!authorityMatcher.match(requestURI, httpMethodType).asserts(user)) {
+            if (!authorityMatcher.match(requestURI, requestMethod).asserts(user)) {
                 throw new DenyException();
             }
         } catch (InvalidTokenException | UnauthorizedException e) {
-            if (!authorityMatcher.match(requestURI, httpMethodType).asserts(null)) {
+            if (!authorityMatcher.match(requestURI, requestMethod).asserts(null)) {
                 unauthorizedHandler.handle(request, response, e);
                 return;
             }

@@ -1,12 +1,8 @@
 package cn.graydove.security.token.authority;
 
-import cn.graydove.security.token.HttpMethodType;
-import cn.graydove.security.userdetails.GrantedAuthority;
 import cn.graydove.security.userdetails.UserDetails;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,15 +12,13 @@ public class AuthorizeRequest {
     private static AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     private List<String> patterns = new LinkedList<>();
-    private HttpMethodType httpMethodType = HttpMethodType.ALL;
+    private RequestMethod requestMethod = null;
     private List<String> authorities = new ArrayList<>();
 
     private AuthorityAssert authorityAssert;
 
-    public void setHttpMethodType(HttpMethodType httpMethodType) {
-        if (httpMethodType != null) {
-            this.httpMethodType = httpMethodType;
-        }
+    public void setRequestMethod(RequestMethod requestMethod) {
+        this.requestMethod = requestMethod;
     }
 
     public void setAuthorities(List<String> authorities) {
@@ -50,6 +44,9 @@ public class AuthorizeRequest {
     }
 
     public boolean asserts(UserDetails userDetails) {
+        if (authorityAssert == null) {
+            return false;
+        }
         return authorityAssert.asserts(authorities, userDetails);
     }
 
@@ -62,15 +59,11 @@ public class AuthorizeRequest {
         return false;
     }
 
-    public boolean matchMethod(HttpMethodType httpMethodType) {
-        return this.httpMethodType == HttpMethodType.ALL || this.httpMethodType == httpMethodType;
+    public boolean matchMethod(RequestMethod requestMethod) {
+        return this.requestMethod == null || this.requestMethod == requestMethod;
     }
 
-    public boolean matchMethod(String httpMethodTypeName) {
-        return matchMethod(HttpMethodType.valueOf(httpMethodTypeName));
-    }
-
-    public boolean match(HttpMethodType httpMethodType, String uri) {
-        return matchMethod(httpMethodType) && matchPattern(uri);
+    public boolean match(RequestMethod requestMethod, String uri) {
+        return matchMethod(requestMethod) && matchPattern(uri);
     }
 }

@@ -4,6 +4,7 @@ import cn.graydove.security.token.authority.AuthorityAssert;
 import cn.graydove.security.userdetails.GrantedAuthority;
 import cn.graydove.security.userdetails.UserDetails;
 import cn.graydove.security.userdetails.support.Authority;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
@@ -15,13 +16,17 @@ public class HasAuthority implements AuthorityAssert {
         }
 
         for (String a: authorities) {
+            boolean hasAuthority = false;
             for (GrantedAuthority authority: userDetails.getAuthorities()){
-                if (Objects.equals(authority.getAuthority(), a)) {
-                    return true;
+                if (StringUtils.equalsIgnoreCase(authority.getAuthority(), a)) {
+                    hasAuthority = true;
+                    break;
                 }
             }
-            break;
+            if (!hasAuthority) {
+                return false;
+            }
         }
-        return false;
+        return true;
     }
 }
