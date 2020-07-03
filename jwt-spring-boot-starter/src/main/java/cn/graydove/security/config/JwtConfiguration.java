@@ -7,6 +7,7 @@ import cn.graydove.security.token.JwtTokenManager;
 import cn.graydove.security.token.TokenManager;
 import cn.graydove.security.properties.JwtProperties;
 import cn.graydove.security.token.getter.TokenGetter;
+import cn.graydove.security.token.getter.support.CookieBearerTokenGetter;
 import cn.graydove.security.token.getter.support.HeaderBearerTokenGetter;
 import cn.graydove.security.token.setter.CookieTokenSetter;
 import cn.graydove.security.token.setter.support.CookieBearerTokenSetter;
@@ -59,7 +60,7 @@ public class JwtConfiguration {
     @Bean
     @ConditionalOnMissingBean(TokenGetter.class)
     public TokenGetter tokenGetter() {
-        return new HeaderBearerTokenGetter();
+        return new CookieBearerTokenGetter();
     }
 
     @Bean

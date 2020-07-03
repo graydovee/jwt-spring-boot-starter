@@ -1,5 +1,6 @@
 package cn.graydove.security.token.manager.impl;
 
+import cn.graydove.security.token.HttpMethodType;
 import cn.graydove.security.token.manager.AuthorityAdapter;
 import cn.graydove.security.token.authority.AuthorizeRequest;
 import cn.graydove.security.token.authority.AuthorizeRequestBuilder;
@@ -23,9 +24,10 @@ public class AuthorityAdapterImpl implements AuthorityAdapter {
     }
 
     @Override
-    public AuthorizeRequestBuilder antMatchers(String pattern) {
+    public AuthorizeRequestBuilder antMatchers(HttpMethodType httpMethodType, String ... patterns) {
         AuthorizeRequest authorizeRequest = new AuthorizeRequest();
-        authorizeRequest.setPattern(pattern);
+        authorizeRequest.addPattern(patterns);
+        authorizeRequest.setHttpMethodType(httpMethodType);
         return new AuthorizeRequestBuilder(authorizeRequest, this);
     }
 
@@ -35,11 +37,10 @@ public class AuthorityAdapterImpl implements AuthorityAdapter {
     }
 
     @Override
-    public AuthorizeRequest match(String uri) {
-        AntPathMatcher antPathMatcher = new AntPathMatcher();
-        for (AuthorizeRequest a: authorizeRequests) {
-            if (antPathMatcher.match(a.getPattern(), uri)) {
-                return a;
+    public AuthorizeRequest match(String uri, HttpMethodType httpMethodType) {
+        for (AuthorizeRequest authorizeRequest: authorizeRequests) {
+            if (authorizeRequest.match(httpMethodType, uri)) {
+                return authorizeRequest;
             }
         }
         return anyRequest;

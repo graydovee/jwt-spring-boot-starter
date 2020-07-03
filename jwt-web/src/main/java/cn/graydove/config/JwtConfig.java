@@ -1,7 +1,7 @@
 package cn.graydove.config;
 
 import cn.graydove.security.token.getter.TokenGetter;
-import cn.graydove.security.token.getter.support.CookieBearerTokenGetter;
+import cn.graydove.security.token.getter.support.HeaderBearerTokenGetter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,6 +9,6 @@ import org.springframework.context.annotation.Configuration;
 public class JwtConfig {
     @Bean
     public TokenGetter tokenGetter() {
-        return new CookieBearerTokenGetter();
+        return new HeaderBearerTokenGetter();
     }
 }

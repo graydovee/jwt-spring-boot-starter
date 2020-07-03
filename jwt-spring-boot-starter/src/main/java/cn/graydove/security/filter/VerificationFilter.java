@@ -7,6 +7,7 @@ import cn.graydove.security.exception.UnauthorizedException;
 import cn.graydove.security.handler.DenyHandler;
 import cn.graydove.security.handler.UnauthorizedHandler;
 import cn.graydove.security.properties.JwtProperties;
+import cn.graydove.security.token.HttpMethodType;
 import cn.graydove.security.token.TokenManager;
 import cn.graydove.security.token.getter.TokenGetter;
 import cn.graydove.security.token.manager.AuthorityMatcher;
@@ -54,16 +55,22 @@ public class VerificationFilter extends BaseFilter {
     public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String requestURI = request.getRequestURI();
         UserDetails user;
+        HttpMethodType httpMethodType;
+        try {
+            httpMethodType = HttpMethodType.valueOf(request.getMethod());
+        } catch (Exception e) {
+            httpMethodType = null;
+        }
         try {
             String token = tokenGetter.getToken(request, jwtProperties.getToken());
             user = check(token);
             request.setAttribute(UserDetails.USER_PARAM_NAME, user);
 
-            if (!authorityMatcher.match(requestURI).asserts(user)) {
+            if (!authorityMatcher.match(requestURI, httpMethodType).asserts(user)) {
                 throw new DenyException();
             }
         } catch (InvalidTokenException | UnauthorizedException e) {
-            if (!authorityMatcher.match(requestURI).asserts(null)) {
+            if (!authorityMatcher.match(requestURI, httpMethodType).asserts(null)) {
                 unauthorizedHandler.handle(request, response, e);
                 return;
             }
