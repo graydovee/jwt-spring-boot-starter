@@ -11,6 +11,7 @@ public class AuthorityConfiguration implements AuthorityConfigure {
     public void configure(AuthorityManager authorityManager) {
         authorityManager
                 .antMatchers("/register").permitAll()
+                .antMatchers("/public/**").permitAll()
                 .antMatchers(RequestMethod.POST,"/post").permitAll()
                 .anyRequest().authenticated();
     }
